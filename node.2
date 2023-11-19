@@ -1,0 +1,56 @@
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+// Create an array to store rooms and bookings
+let rooms = [];
+let bookings = [];
+
+// Create a Room
+app.post('/api/rooms', (req, res) => {
+    const newRoom = req.body;
+    newRoom.id = rooms.length + 1;
+    rooms.push(newRoom);
+    res.status(201).send(newRoom);
+});
+
+// Get a Room
+app.get('/api/rooms/:id', (req, res) => {
+    const room = rooms.find(room => room.id === parseInt(req.params.id));
+    if (!room) return res.status(404).send('The room with given ID was not found.');
+    res.send(room);
+});
+
+// Update a Room
+app.put('/api/rooms/:id', (req, res) => {
+    const room = rooms.find(room => room.id === parseInt(req.params.id));
+    if (!room) return res.status(404).send('The room with given ID was not found.');
+    Object.assign(room, req.body);
+    res.send(room);
+});
+
+// Delete a Room
+app.delete('/api/rooms/:id', (req, res) => {
+    const room = rooms.find(room => room.id === parseInt(req.params.id));
+    if (!room) return res.status(404).send('The room with given ID was not found.');
+    const index = rooms.indexOf(room);
+    rooms.splice(index, 1);
+    res.send(room);
+});
+
+// Book a Room
+app.post('/api/bookings', (req, res) => {
+    const newBooking = req.body;
+    newBooking.id = bookings.length + 1;
+    bookings.push(newBooking);
+    res.status(201).send(newBooking);
+});
+
+// List all Bookings
+app.get('/api/bookings', (req, res) => {
+    res.send(bookings);
+});
+
+// Start the server
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server running on port ${port}...`));
